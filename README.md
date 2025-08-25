@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Order Builder
+
+This is a Next.js app that implements a 4-stage order-building workflow with Zustand state, ShadCN UI, and both unit and end-to-end tests.
 
 ## Getting Started
 
@@ -19,6 +21,32 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Testing
+
+- Unit tests are powered by Jest. To run them:
+
+```bash
+npm test
+```
+
+- End-to-end (BDD-style) tests are powered by Playwright. To install browsers and run tests:
+
+```bash
+# Install dependencies
+npm install
+
+# Install Playwright browsers (one-time)
+npx playwright install --with-deps
+
+# Run E2E tests (headless)
+npm run test:e2e
+
+# Run in headed / UI mode
+npm run test:e2e:ui
+```
+
+Playwright is configured in playwright.config.ts to automatically start the dev server on http://localhost:3000. In CI, it will run `npm run start` instead.
 
 ## Learn More
 

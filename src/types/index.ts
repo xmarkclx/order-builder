@@ -7,9 +7,7 @@ export interface Address {
 }
 
 export interface Customer {
-  firstName: string;
-  middleName?: string;
-  lastName: string;
+  name: string;
   prePopulated: boolean;
   companyAddress?: Address;
 }

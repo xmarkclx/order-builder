@@ -10,8 +10,7 @@ test.describe('Feature: Review & Finalize', () => {
     await page.getByRole('button', { name: /Start Building Your Order/i }).click();
     await expect(page).toHaveURL(/.*step-1/);
 
-    await page.getByTestId('firstName').fill('Rita');
-    await page.getByTestId('lastName').fill('Booker');
+    await page.getByTestId('name').fill('Rita Booker');
     await page.getByTestId('wizardNext').click();
     await expect(page).toHaveURL(/.*step-2/);
 

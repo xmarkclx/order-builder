@@ -19,8 +19,7 @@ describe('Order Store (Simple Tests)', () => {
       useOrderStore.getState().reset();
       const state = useOrderStore.getState();
       
-      expect(state.customer.firstName).toBe('');
-      expect(state.customer.lastName).toBe('');
+      expect(state.customer.name).toBe('');
       expect(state.customer.prePopulated).toBe(false);
       expect(state.currentStep).toBe(1);
       expect(state.total).toBe(0);
@@ -33,13 +32,11 @@ describe('Order Store (Simple Tests)', () => {
       useOrderStore.getState().reset();
       
       updateCustomer({
-        firstName: 'John',
-        lastName: 'Doe'
+        name: 'John Doe'
       });
       
       const customer = useOrderStore.getState().customer;
-      expect(customer.firstName).toBe('John');
-      expect(customer.lastName).toBe('Doe');
+      expect(customer.name).toBe('John Doe');
       expect(customer.prePopulated).toBe(false); // Should preserve other fields
     });
 
@@ -47,8 +44,7 @@ describe('Order Store (Simple Tests)', () => {
       useOrderStore.getState().reset();
       
       const newCustomer = {
-        firstName: 'Jane',
-        lastName: 'Smith',
+        name: 'Jane Smith',
         prePopulated: true,
         companyAddress: {
           line1: '123 Main St',
@@ -228,14 +224,14 @@ describe('Order Store (Simple Tests)', () => {
     it('should reset all values to defaults', () => {
       // Populate the store first
       useOrderStore.getState().update({
-        customer: { firstName: 'John', lastName: 'Doe', prePopulated: false },
+        customer: { name: 'John Doe', prePopulated: false },
         currentStep: 3,
         total: 500
       });
       
       // Verify populated
       let state = useOrderStore.getState();
-      expect(state.customer.firstName).toBe('John');
+      expect(state.customer.name).toBe('John Doe');
       expect(state.currentStep).toBe(3);
       expect(state.total).toBe(500);
       
@@ -244,7 +240,7 @@ describe('Order Store (Simple Tests)', () => {
       
       // Verify reset
       state = useOrderStore.getState();
-      expect(state.customer.firstName).toBe('');
+      expect(state.customer.name).toBe('');
       expect(state.currentStep).toBe(1);
       expect(state.total).toBe(0);
     });

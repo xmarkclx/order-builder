@@ -139,7 +139,7 @@ export default function ReviewFinalize() {
               <div>
                 <Label className="text-sm font-medium text-gray-600">Name</Label>
                 <div className="text-lg font-semibold">
-                  {formatCustomerName(customer.firstName, customer.middleName, customer.lastName)}
+                  {customer.name}
                 </div>
               </div>
               

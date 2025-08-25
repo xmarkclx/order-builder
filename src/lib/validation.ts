@@ -2,23 +2,11 @@ import * as yup from 'yup';
 
 // Customer validation schema
 export const customerSchema = yup.object({
-  firstName: yup
+  name: yup
     .string()
-    .required('First name is required')
-    .min(2, 'First name must be at least 2 characters')
-    .max(50, 'First name cannot exceed 50 characters'),
-  
-  middleName: yup
-    .string()
-    .max(50, 'Middle name cannot exceed 50 characters')
-    .optional()
-    .nullable(),
-  
-  lastName: yup
-    .string()
-    .required('Last name is required')
-    .min(2, 'Last name must be at least 2 characters')
-    .max(50, 'Last name cannot exceed 50 characters'),
+    .required('Name is required')
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name cannot exceed 100 characters'),
   
   prePopulated: yup.boolean().required(),
   

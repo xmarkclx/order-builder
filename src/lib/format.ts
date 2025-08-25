@@ -137,9 +137,8 @@ export const truncateText = (text: string, maxLength: number): string => {
 };
 
 /**
- * Format full customer name
+ * Format customer name (single field)
  */
-export const formatCustomerName = (firstName: string, middleName?: string, lastName: string = ''): string => {
-  const parts = [firstName, middleName, lastName].filter(Boolean);
-  return parts.join(' ').trim();
+export const formatCustomerName = (name: string): string => {
+  return (name || '').trim();
 };

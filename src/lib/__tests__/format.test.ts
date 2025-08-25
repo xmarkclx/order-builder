@@ -83,23 +83,14 @@ describe('Formatting Utilities', () => {
   });
 
   describe('Feature: Customer Name Formatting', () => {
-    describe('Given different name combinations', () => {
-      it('should format full name with all parts', () => {
-        expect(formatCustomerName('John', 'Michael', 'Doe')).toBe('John Michael Doe');
-      });
-
-      it('should format name without middle name', () => {
-        expect(formatCustomerName('John', undefined, 'Doe')).toBe('John Doe');
-        expect(formatCustomerName('John', '', 'Doe')).toBe('John Doe');
-      });
-
-      it('should handle single name', () => {
+    describe('Given a single name field', () => {
+      it('should return trimmed name', () => {
         expect(formatCustomerName('John')).toBe('John');
+        expect(formatCustomerName('  Jane Doe  ')).toBe('Jane Doe');
       });
 
       it('should handle empty inputs gracefully', () => {
-        expect(formatCustomerName('', '', '')).toBe('');
-        expect(formatCustomerName('John', '', '')).toBe('John');
+        expect(formatCustomerName('')).toBe('');
       });
     });
   });

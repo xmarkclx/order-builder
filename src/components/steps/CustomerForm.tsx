@@ -57,54 +57,21 @@ export default function CustomerForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* First Name */}
+      <div className="grid grid-cols-1 gap-6">
+        {/* Name */}
         <div className="space-y-2">
-          <Label htmlFor="firstName" className="text-sm font-medium">
-            First Name *
+          <Label htmlFor="name" className="text-sm font-medium">
+            Name *
           </Label>
           <Input
-            id="firstName"
-            data-testid="firstName"
-            {...register('firstName', { required: 'First name is required' })}
-            placeholder="Enter first name"
-            className={errors.firstName ? 'border-red-500' : ''}
+            id="name"
+            data-testid="name"
+            {...register('name', { required: 'Name is required' })}
+            placeholder="Enter company or contact name"
+            className={errors.name ? 'border-red-500' : ''}
           />
-          {errors.firstName && (
-            <p className="text-sm text-red-600">{errors.firstName.message}</p>
-          )}
-        </div>
-
-        {/* Last Name */}
-        <div className="space-y-2">
-          <Label htmlFor="lastName" className="text-sm font-medium">
-            Last Name *
-          </Label>
-          <Input
-            id="lastName"
-            data-testid="lastName"
-            {...register('lastName', { required: 'Last name is required' })}
-            placeholder="Enter last name"
-            className={errors.lastName ? 'border-red-500' : ''}
-          />
-          {errors.lastName && (
-            <p className="text-sm text-red-600">{errors.lastName.message}</p>
-          )}
-        </div>
-
-        {/* Middle Name */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="middleName" className="text-sm font-medium">
-            Middle Name (Optional)
-          </Label>
-          <Input
-            id="middleName"
-            {...register('middleName')}
-            placeholder="Enter middle name"
-            className="max-w-md"
-          />
-          {errors.middleName && (
-            <p className="text-sm text-red-600">{errors.middleName.message}</p>
+          {errors.name && (
+            <p className="text-sm text-red-600">{errors.name.message}</p>
           )}
         </div>
       </div>

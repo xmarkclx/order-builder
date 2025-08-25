@@ -12,19 +12,17 @@ test.describe('Feature: Customer Information', () => {
   });
 
   test('Scenario: Block advancing when name is missing', async ({ page }) => {
-    // When I click Next without filling names
+    // When I click Next without filling name
     await page.getByTestId('wizardNext').click();
 
-    // Then I should see validation errors for required names
-    await expect(page.getByText(/First name is required/i)).toBeVisible();
-    await expect(page.getByText(/Last name is required/i)).toBeVisible();
+    // Then I should see validation error for required name
+    await expect(page.getByText(/Name is required/i)).toBeVisible();
 
     // And I remain on step-1
     await expect(page).toHaveURL(/.*step-1/);
 
-    // When I fill first and last name
-    await page.getByTestId('firstName').fill('Alice');
-    await page.getByTestId('lastName').fill('Walker');
+    // When I fill name
+    await page.getByTestId('name').fill('Alice Walker');
 
     // And click Next
     await page.getByTestId('wizardNext').click();
@@ -34,9 +32,8 @@ test.describe('Feature: Customer Information', () => {
   });
 
   test('Scenario: Address becomes required when "Use company address" is checked', async ({ page }) => {
-    // Fill minimal required names
-    await page.getByTestId('firstName').fill('Bob');
-    await page.getByTestId('lastName').fill('Stone');
+    // Fill minimal required name
+    await page.getByTestId('name').fill('Bob Stone');
 
     // When I enable company address
     await page.getByTestId('useCompanyAddress').click();

@@ -156,9 +156,7 @@ export const wizardSteps: WizardStep[] = [
 
 // Default empty customer
 export const createDefaultCustomer = (): Customer => ({
-  firstName: '',
-  middleName: '',
-  lastName: '',
+  name: '',
   prePopulated: false,
   companyAddress: undefined
 });

@@ -23,11 +23,15 @@ test.describe('Feature: Review & Finalize', () => {
 
     // Step 3 - pick date and duration
     await page.getByRole('button', { name: /Pick a date/i }).click();
-    // Choose first enabled day
-    const enabledDay = page.locator('button[aria-disabled="false"]');
-    await enabledDay.first().click();
+    // Select the first enabled day within the calendar popover
+    const calendar = page.locator('[data-slot="calendar"]');
+    await expect(calendar).toBeVisible();
+    await calendar.locator('button[data-day]:not([disabled])').first().click();
+    // Close the calendar popover to avoid overlay blocking next interactions
+    await page.keyboard.press('Escape');
+    await expect(calendar).toBeHidden();
 
-    await page.getByRole('button', { name: /Select duration/i }).click();
+    await page.locator('[data-slot="select-trigger"]').first().click();
     await page.getByRole('option', { name: /12 months/i }).click();
 
     await page.getByTestId('wizardNext').click();
@@ -40,7 +44,7 @@ test.describe('Feature: Review & Finalize', () => {
     await expect(page.getByText(/Order Finalized!/i)).toBeVisible();
 
     // Close -> navigates home
-    await page.getByRole('button', { name: /^Close$/ }).click();
+    await page.getByRole('button', { name: /^Close$/ }).first().click();
     await expect(page).toHaveURL('/');
 
     // Orders list should show at least one order

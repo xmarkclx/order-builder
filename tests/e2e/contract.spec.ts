@@ -30,31 +30,16 @@ test.describe('Feature: Contract Terms', () => {
     // Click the Start Date button (shows 'Pick a date' when empty)
     await page.getByRole('button', { name: /Pick a date/i }).click();
 
-    // Try selecting day 15 of the displayed month (should be enabled in future months)
-    // If today is after 15th and current month days before now are disabled, this still works because we have not constrained month.
-    // To be robust, if clicking '15' fails, click on any enabled day button.
-    const anyDayButton = page.locator('button:has-text("15")');
-    if (await anyDayButton.count()) {
-      // If '15' exists and is enabled, click it
-      try {
-        await anyDayButton.first().click({ trial: true });
-        await anyDayButton.first().click();
-      } catch {
-        // If it was disabled, move to next month and pick day 15
-        const nextMonth = page.getByRole('button', { name: /next month/i });
-        if (await nextMonth.count()) {
-          await nextMonth.click();
-        }
-        await page.locator('button:has-text("15")').first().click();
-      }
-    } else {
-      // Fallback: click the first enabled day button
-      const enabledDay = page.locator('button[aria-disabled="false"]');
-      await enabledDay.first().click();
-    }
+    // Select the first enabled day within the calendar popover
+    const calendar = page.locator('[data-slot="calendar"]');
+    await expect(calendar).toBeVisible();
+    await calendar.locator('button[data-day]:not([disabled])').first().click();
+    // Close the calendar popover to avoid overlay blocking next interactions
+    await page.keyboard.press('Escape');
+    await expect(calendar).toBeHidden();
 
     // Choose duration = 12 months from the select
-    await page.getByRole('button', { name: /Select duration/i }).click();
+    await page.locator('[data-slot="select-trigger"]').first().click();
     await page.getByRole('option', { name: /12 months/i }).click();
 
     // Now Next should be enabled

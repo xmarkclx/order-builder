@@ -7,6 +7,7 @@ import { wizardSteps } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import Link from "next/link";
 
 interface WizardLayoutProps {
   children: React.ReactNode;
@@ -18,8 +19,8 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
   const currentStep = useCurrentStep();
 
   const handleStepClick = (stepId: number) => {
-    // Allow navigation to completed steps or the next immediate step
-    if (stepId <= currentStep || stepId === currentStep + 1) {
+    // Allow navigation only to current or completed steps
+    if (stepId <= currentStep) {
       goToStep(stepId);
       const targetStep = wizardSteps.find(s => s.id === stepId);
       if (targetStep) {
@@ -33,7 +34,9 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Order Builder</h1>
+          <Link href="/">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Order Builder</h1>
+          </Link>
           <p className="text-lg text-gray-600">Create your order step by step</p>
         </div>
 
@@ -43,7 +46,7 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
             {wizardSteps.map((step, index) => {
               const isActive = step.id === currentStepId;
               const isCompleted = step.id < currentStep;
-              const isAccessible = step.id <= currentStep || step.id === currentStep + 1;
+              const isAccessible = step.id <= currentStep;
 
               return (
                 <React.Fragment key={step.id}>

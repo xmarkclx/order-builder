@@ -333,7 +333,7 @@ export default function ReviewFinalize() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Base Plan ({selectedPlan?.name}):</span>
-              <span>{formatCurrency(breakdown.planTotal)}</span>
+              <span data-testid="basePlanAmount">{formatCurrency(breakdown.planTotal)}</span>
             </div>
             
             {includedAddOns.map((addon) => (
@@ -347,12 +347,12 @@ export default function ReviewFinalize() {
             
             <div className="flex justify-between text-lg font-bold">
               <span>Total Monthly:</span>
-              <span>{formatCurrency(breakdown.total)}</span>
+              <span data-testid="totalMonthly">{formatCurrency(breakdown.total)}</span>
             </div>
             
             <div className="flex justify-between text-sm text-gray-600">
               <span>Contract Total ({contract.durationMonths} months):</span>
-              <span>{formatCurrency(breakdown.total * contract.durationMonths)}</span>
+              <span data-testid="contractTotal">{formatCurrency(breakdown.total * contract.durationMonths)}</span>
             </div>
           </div>
         </CardContent>

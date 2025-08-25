@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 interface ProductPlanFormData {
   selectedProductId: string;
@@ -22,6 +23,7 @@ interface ProductPlanFormData {
 }
 
 export default function ProductPlanForm() {
+  const [isEditingPrice, setIsEditingPrice] = useState(false);
   const router = useRouter();
   const currentProduct = useProduct();
   const currentPlan = useSelectedPlan();
@@ -224,11 +226,18 @@ export default function ProductPlanForm() {
       {/* Custom Price Input - Only show if plan is selected */}
       {selectedPlan && (
         <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Adjust Pricing</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              You can modify the price if needed.
-            </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Edit Price</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                You can modify the price if needed.
+              </p>
+            </div>
+            {!isEditingPrice && (
+              <Button type="button" data-testid="editPrice" variant="outline" size="sm" onClick={() => setIsEditingPrice(true)}>
+                Edit price
+              </Button>
+            )}
           </div>
 
           <div className="max-w-sm">
@@ -239,17 +248,22 @@ export default function ProductPlanForm() {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-500 sm:text-sm">$</span>
               </div>
-              <Input
+              <textarea
                 id="customPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                {...register('customPrice', { 
-                  valueAsNumber: true,
+                rows={1}
+                placeholder="0.00"
+                disabled={!isEditingPrice}
+                {...register('customPrice', {
+                  setValueAs: (v) => {
+                    const str = typeof v === 'string' ? v : String(v ?? '');
+                    const cleaned = str.trim();
+                    if (cleaned === '') return 0;
+                    const n = parseFloat(cleaned);
+                    return isNaN(n) ? 0 : n;
+                  },
                   min: 0
                 })}
-                placeholder="0.00"
-                className={`pl-7 ${errors.customPrice ? 'border-red-500' : ''}`}
+                className={`pl-7 w-full resize-none border rounded-md p-2 ${errors.customPrice ? 'border-red-500' : ''} ${!isEditingPrice ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
               />
             </div>
             {errors.customPrice && (

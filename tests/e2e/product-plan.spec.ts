@@ -11,8 +11,7 @@ test.describe('Feature: Product & Plan Selection', () => {
     await page.getByRole('button', { name: /Start Building Your Order/i }).click();
     await expect(page).toHaveURL(/.*step-1/);
 
-    await page.getByTestId('firstName').fill('Eve');
-    await page.getByTestId('lastName').fill('Adams');
+    await page.getByTestId('name').fill('Eve Adams');
     await page.getByTestId('wizardNext').click();
     await expect(page).toHaveURL(/.*step-2/);
   });
@@ -42,8 +41,11 @@ test.describe('Feature: Product & Plan Selection', () => {
     await page.getByText('API Gateway Pro', { exact: true }).click();
     await page.getByText('Starter Plan', { exact: true }).click();
 
+    // Enable price editing
+    await page.getByRole('button', { name: /Edit price/i }).click();
+
     // Set custom price to a negative value
-    const customPrice = page.locator('input#customPrice');
+    const customPrice = page.locator('textarea#customPrice');
     await customPrice.fill('');
     await customPrice.type('-1');
 

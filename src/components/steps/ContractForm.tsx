@@ -127,6 +127,7 @@ export default function ContractForm() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
+                    data-testid="startDate"
                     className={cn(
                       "w-full justify-start text-left font-normal mt-1",
                       !field.value && "text-muted-foreground",
@@ -178,7 +179,7 @@ export default function ContractForm() {
               }
             }}
           >
-            <SelectTrigger className={`mt-1 ${errors.durationMonths ? 'border-red-500' : ''}`}>
+            <SelectTrigger data-testid="duration" className={`mt-1 ${errors.durationMonths ? 'border-red-500' : ''}`}>
               <SelectValue placeholder="Select duration" />
             </SelectTrigger>
             <SelectContent>
@@ -250,7 +251,7 @@ export default function ContractForm() {
                 <>
                   <div>
                     <span className="text-blue-700 font-medium">End Date:</span>
-                    <div className="text-blue-900 font-semibold">
+                    <div className="text-blue-900 font-semibold" data-testid="endDate">
                       {formatDate(calculatedEndDate, 'EEEE, MMMM d, yyyy')}
                     </div>
                   </div>

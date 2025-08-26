@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Decimal from 'decimal.js';
 
 // Type alias for Decimal instance to avoid TypeScript conflicts
@@ -20,7 +19,7 @@ export class Money {
    */
   add(other: Money | string | number): Money {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return new Money((this.value as any).add(otherValue));
+    return new Money(this.value.plus(otherValue));
   }
 
   /**
@@ -28,7 +27,7 @@ export class Money {
    */
   subtract(other: Money | string | number): Money {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return new Money((this.value as any).sub(otherValue));
+    return new Money(this.value.minus(otherValue));
   }
 
   /**
@@ -36,7 +35,7 @@ export class Money {
    */
   multiply(other: Money | string | number): Money {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return new Money((this.value as any).mul(otherValue));
+    return new Money(this.value.times(otherValue));
   }
 
   /**
@@ -44,7 +43,7 @@ export class Money {
    */
   divide(other: Money | string | number): Money {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return new Money((this.value as any).div(otherValue));
+    return new Money(this.value.div(otherValue));
   }
 
   /**
@@ -52,7 +51,7 @@ export class Money {
    */
   equals(other: Money | string | number): boolean {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return (this.value as any).equals(otherValue);
+    return this.value.eq(otherValue);
   }
 
   /**
@@ -60,7 +59,7 @@ export class Money {
    */
   greaterThan(other: Money | string | number): boolean {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return (this.value as any).greaterThan(otherValue);
+    return this.value.gt(otherValue);
   }
 
   /**
@@ -68,7 +67,7 @@ export class Money {
    */
   lessThan(other: Money | string | number): boolean {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return (this.value as any).lessThan(otherValue);
+    return this.value.lt(otherValue);
   }
 
   /**
@@ -76,7 +75,7 @@ export class Money {
    */
   greaterThanOrEqualTo(other: Money | string | number): boolean {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return (this.value as any).greaterThanOrEqualTo(otherValue);
+    return this.value.gte(otherValue);
   }
 
   /**
@@ -84,42 +83,42 @@ export class Money {
    */
   lessThanOrEqualTo(other: Money | string | number): boolean {
     const otherValue = other instanceof Money ? other.value : new Decimal(other);
-    return (this.value as any).lessThanOrEqualTo(otherValue);
+    return this.value.lte(otherValue);
   }
 
   /**
    * Get the absolute value
    */
   abs(): Money {
-    return new Money((this.value as any).abs());
+    return new Money(this.value.abs());
   }
 
   /**
    * Round to specified decimal places (default 2 for currency)
    */
   round(decimalPlaces: number = 2): Money {
-    return new Money((this.value as any).toDecimalPlaces(decimalPlaces));
+    return new Money(this.value.toDecimalPlaces(decimalPlaces));
   }
 
   /**
    * Convert to number (use carefully - may lose precision)
    */
   toNumber(): number {
-    return (this.value as any).toNumber();
+    return this.value.toNumber();
   }
 
   /**
    * Convert to string representation
    */
   toString(): string {
-    return (this.value as any).toString();
+    return this.value.toString();
   }
 
   /**
    * Convert to fixed decimal places string (for display)
    */
   toFixed(decimalPlaces: number = 2): string {
-    return (this.value as any).toFixed(decimalPlaces);
+    return this.value.toFixed(decimalPlaces);
   }
 
   /**

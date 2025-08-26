@@ -1,4 +1,4 @@
-export type StoredOrder<T = any> = T & { id: string; createdAt: string };
+export type StoredOrder<T = unknown> = T & { id: string; createdAt: string };
 
 const KEY = 'orders';
 
@@ -6,7 +6,7 @@ function isBrowser() {
   return typeof window !== 'undefined';
 }
 
-export function getOrders<T = any>(): StoredOrder<T>[] {
+export function getOrders<T = unknown>(): StoredOrder<T>[] {
   if (!isBrowser()) return [];
   try {
     const raw = window.localStorage.getItem(KEY);
@@ -16,7 +16,7 @@ export function getOrders<T = any>(): StoredOrder<T>[] {
   }
 }
 
-export function saveOrder<T = any>(
+export function saveOrder<T = unknown>(
   order: Omit<StoredOrder<T>, 'id' | 'createdAt'> & Partial<StoredOrder<T>>
 ) {
   if (!isBrowser()) return;
@@ -27,7 +27,10 @@ export function saveOrder<T = any>(
       ? (crypto.randomUUID as () => string)()
       : `${Date.now()}-${Math.random()}`);
   const createdAt = order.createdAt ?? new Date().toISOString();
-  const next = [{ ...(order as any), id, createdAt } as StoredOrder<T>, ...orders];
+  // Ensure we construct a StoredOrder<T> without using any
+  const base = order as unknown as T;
+  const item: StoredOrder<T> = { ...(base as T), id, createdAt } as StoredOrder<T>;
+  const next = [item, ...orders];
   window.localStorage.setItem(KEY, JSON.stringify(next));
   return id;
 }

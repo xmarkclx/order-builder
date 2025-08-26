@@ -78,7 +78,7 @@ export default function Home() {
           
           <div className="text-center">
             <p className="text-xs text-gray-500">
-              Your progress will be automatically saved as you complete each step, so you don't have to worry about prefilling each step again.
+              Your progress will be automatically saved as you complete each step, so you don&apos;t have to worry about prefilling each step again.
             </p>
             <p className="text-xs text-gray-500">
               Enjoy your order!

@@ -94,8 +94,12 @@ export default function CustomerForm() {
         </p>
       </div>
 
-      {/* Address Fields - Only shown when prePopulated is true */}
-      {prePopulated && (
+      {/* Address Fields - always rendered for smooth slide animation */}
+      <div
+        className={`slidey ${prePopulated ? 'open' : ''}`}
+        aria-hidden={!prePopulated}
+        aria-expanded={prePopulated}
+      >
         <div className="space-y-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
           <h3 className="text-lg font-medium text-gray-900">Company Address</h3>
           
@@ -193,7 +197,7 @@ export default function CustomerForm() {
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Form Validation Alert */}
       {Object.keys(errors).length > 0 && (

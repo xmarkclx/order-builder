@@ -7,7 +7,9 @@ import { createDefaultOrder } from '@/lib/data';
 // Initial state factory
 const createInitialState = (): Omit<OrderState, 'update' | 'reset' | 'calculateTotal'> => ({
   ...createDefaultOrder(),
-  currentStep: 1
+  currentStep: 1,
+  navDirection: 'next',
+  priceOverrides: {}
 });
 
 // Store implementation
@@ -68,6 +70,7 @@ export const useOrderStore = create<OrderState>()(
         customer: state.customer,
         product: state.product,
         selectedPlan: state.selectedPlan,
+        priceOverrides: state.priceOverrides,
         contract: {
           ...state.contract,
           startDate: (state.contract.startDate instanceof Date)
@@ -93,6 +96,8 @@ export const useContract = () => useOrderStore(state => state.contract);
 export const useAddOns = () => useOrderStore(state => state.addOns);
 export const useTotal = () => useOrderStore(state => state.total);
 export const useCurrentStep = () => useOrderStore(state => state.currentStep);
+export const useNavDirection = () => useOrderStore(state => state.navDirection);
+export const usePriceOverrides = () => useOrderStore(state => state.priceOverrides);
 
 // Action hooks - memoize the selector to prevent infinite loops
 export const useOrderActions = () => {
@@ -139,13 +144,13 @@ export const goToStep = (step: number) => {
 export const nextStep = () => {
   const currentStep = useOrderStore.getState().currentStep;
   if (currentStep < 4) {
-    goToStep(currentStep + 1);
+    useOrderStore.getState().update({ currentStep: currentStep + 1, navDirection: 'next' });
   }
 };
 
 export const prevStep = () => {
   const currentStep = useOrderStore.getState().currentStep;
   if (currentStep > 1) {
-    goToStep(currentStep - 1);
+    useOrderStore.getState().update({ currentStep: currentStep - 1, navDirection: 'prev' });
   }
 };

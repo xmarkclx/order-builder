@@ -85,7 +85,7 @@ export const contractSchema = yup.object({
     .number()
     .required('Duration is required')
     .min(1, 'Duration must be at least 1 month')
-    .max(60, 'Duration cannot exceed 60 months')
+    .max(100, 'Duration cannot exceed 100 months')
     .integer('Duration must be a whole number'),
   
   endDate: yup

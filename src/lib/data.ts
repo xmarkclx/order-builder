@@ -76,7 +76,7 @@ export const sampleAddOns: AddOn[] = [
     id: 'api-calls',
     name: 'Additional API Calls',
     description: 'Extra API call quota beyond base plan',
-    price: 0.001, // $0.001 per unit
+    price: 0.01, // $0.01 per unit
     quantity: 0,
     included: false
   },

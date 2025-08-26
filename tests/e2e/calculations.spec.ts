@@ -76,16 +76,14 @@ async function readOrderSummary(page) {
 }
 
 async function includeAllAvailableAddOns(page) {
-  // Click all checkboxes in Available Add-ons card to include them
-  // The section is optional; if not visible, skip
-  const availableCard = page.getByText('Available Add-ons').locator('..');
-  if (await availableCard.count()) {
-    const rows = availableCard.locator('div.flex.items-center.justify-between');
+  // Click all checkboxes in unified Add-ons card to include them
+  const addonsCard = page.getByText('Add-ons').locator('..').locator('..').last();
+  if (await addonsCard.count()) {
+    const rows = addonsCard.locator('div.flex.items-center.justify-between');
     const count = await rows.count();
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i);
       const checkbox = row.getByRole('checkbox');
-      // Only click if not already checked
       const ariaChecked = await checkbox.getAttribute('aria-checked');
       if (ariaChecked !== 'true') {
         await checkbox.click();
@@ -95,18 +93,24 @@ async function includeAllAvailableAddOns(page) {
 }
 
 async function setQuantitiesForIncludedAddOns(page) {
-  // For each included add-on row, set a unique quantity (1-based index)
-  const includedTitle = page.getByText('Included Add-ons');
-  if (!(await includedTitle.count())) return;
-  const includedCard = includedTitle.locator('..').locator('..');
-  const rows = includedCard.locator('div.flex.items-center.justify-between');
+  // For each included add-on row in the unified Add-ons card, set a unique quantity (1-based index)
+  const addonsTitle = page.getByText('Add-ons');
+  if (!(await addonsTitle.count())) return;
+  const addonsCard = addonsTitle.locator('..').locator('..').last();
+  const rows = addonsCard.locator('div.flex.items-center.justify-between');
   const count = await rows.count();
+  let idx = 0;
   for (let i = 0; i < count; i++) {
     const row = rows.nth(i);
-    const qtyInput = row.getByRole('spinbutton');
-    const qty = i + 1; // 1,2,3,...
-    await qtyInput.fill('');
-    await qtyInput.type(String(qty));
+    const checkbox = row.getByRole('checkbox');
+    const ariaChecked = await checkbox.getAttribute('aria-checked');
+    if (ariaChecked === 'true') {
+      const qtyInput = row.getByRole('spinbutton');
+      const qty = idx + 1; // 1,2,3,... for included items only
+      await qtyInput.fill('');
+      await qtyInput.type(String(qty));
+      idx++;
+    }
   }
 }
 
@@ -134,15 +138,23 @@ test.describe('Feature: Accurate Totals across products, plans, add-ons', () => 
         expect(addOnsSum).toBeCloseTo(0, 2);
         expect(totalMonthly).toBeCloseTo(base, 2);
         // duration is 12 months (selected), so contract total should be base * 12
-        expect(contractTotal).toBeCloseTo(totalMonthly * 12, 2);
+        {
+          const monthlyRounded = parseFloat(totalMonthly.toFixed(2));
+          const expectedContract = parseFloat((monthlyRounded * 12).toFixed(2));
+          expect(contractTotal).toBeCloseTo(expectedContract, 2);
+        }
 
         // Scenario B: Include all available add-ons, set quantities 1..N
         await includeAllAvailableAddOns(page);
         await setQuantitiesForIncludedAddOns(page);
-
+        // allow UI to recalculate totals
+        await page.waitForTimeout(50);
         ({ base, addOnsSum, totalMonthly, contractTotal } = await readOrderSummary(page));
         expect(totalMonthly).toBeCloseTo(base + addOnsSum, 2);
-        expect(contractTotal).toBeCloseTo(totalMonthly * 12, 2);
+        {
+          const expectedContract = parseFloat((totalMonthly * 12).toFixed(2));
+          expect(contractTotal).toBeCloseTo(expectedContract, 2);
+        }
       }
     }
   });

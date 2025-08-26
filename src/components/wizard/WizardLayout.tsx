@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useCurrentStep, goToStep } from '@/store/orderStore';
+import { useCurrentStep, useNavDirection, goToStep, useOrderActions } from '@/store/orderStore';
 import { wizardSteps } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,10 +17,28 @@ interface WizardLayoutProps {
 export default function WizardLayout({ children, currentStepId }: WizardLayoutProps) {
   const router = useRouter();
   const currentStep = useCurrentStep();
+  const navDirection = useNavDirection();
+  const { update } = useOrderActions();
+  const [entering, setEntering] = React.useState(true);
+
+  React.useEffect(() => {
+    // Trigger enter animation whenever the current step page mounts/changes
+    setEntering(true);
+    const t = setTimeout(() => setEntering(false), 0);
+    return () => clearTimeout(t);
+  }, [currentStepId]);
+
+  // Ensure the store's currentStep matches the page's step id.
+  React.useEffect(() => {
+    update({ currentStep: currentStepId });
+  }, [currentStepId, update]);
 
   const handleStepClick = (stepId: number) => {
     // Allow navigation only to current or completed steps
     if (stepId <= currentStep) {
+      // Set direction based on relative target
+      const dir = stepId >= currentStep ? 'next' : 'prev';
+      update({ navDirection: dir as 'next' | 'prev' });
       goToStep(stepId);
       const targetStep = wizardSteps.find(s => s.id === stepId);
       if (targetStep) {
@@ -30,7 +48,7 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -58,7 +76,7 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
                       className={cn(
                         'w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200',
                         isActive
-                          ? 'bg-blue-600 text-white shadow-lg scale-110'
+                          ? 'bg-black text-white shadow-lg scale-110'
                           : isCompleted
                           ? 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
                           : isAccessible
@@ -73,7 +91,7 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
                     <div className="hidden sm:block mt-2 text-center">
                       <div className={cn(
                         'text-sm font-medium',
-                        isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-600'
+                        isActive ? 'text-black' : isCompleted ? 'text-green-600' : 'text-gray-600'
                       )}>
                         {step.title}
                       </div>
@@ -107,7 +125,7 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
         </div>
 
         {/* Main Content */}
-        <Card className="max-w-4xl mx-auto shadow-xl">
+        <Card className="max-w-4xl mx-auto shadow-xl border-amber-200">
           <CardContent className="p-8">
             <div className="mb-6">
               <div className="flex items-center justify-between">
@@ -125,7 +143,16 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
               </div>
             </div>
             
-            {children}
+            <div
+              className={cn(
+                'transform transition-all duration-300 ease-out',
+                entering
+                  ? (navDirection === 'prev' ? '-translate-x-6 opacity-0' : 'translate-x-6 opacity-0')
+                  : 'translate-x-0 opacity-100'
+              )}
+            >
+              {children}
+            </div>
           </CardContent>
         </Card>
 
@@ -137,12 +164,17 @@ export default function WizardLayout({ children, currentStepId }: WizardLayoutPr
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
-              className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+              className="bg-black h-2 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${(currentStepId / wizardSteps.length) * 100}%` }}
             />
           </div>
         </div>
       </div>
+
+     <div>
+         
+     </div>
+      
     </div>
   );
 }
@@ -209,7 +241,7 @@ export function WizardNavigation({
             disabled={isNextDisabled || isLoading}
             className={cn(
               'px-6 py-2 text-sm font-medium rounded-md transition-colors duration-200',
-              'bg-blue-600 text-white hover:bg-blue-700',
+              'bg-black text-white hover:bg-black/90',
               'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >

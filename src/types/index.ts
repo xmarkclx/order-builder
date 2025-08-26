@@ -51,6 +51,9 @@ export interface Order {
 
 export interface OrderState extends Order {
   currentStep: number;
+  navDirection?: 'next' | 'prev';
+  // Custom per-plan price overrides (planId -> price)
+  priceOverrides: Record<string, number>;
   update: (partial: Partial<OrderState>) => void;
   reset: () => void;
   calculateTotal: () => void;

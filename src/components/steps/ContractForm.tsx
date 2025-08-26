@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
-import { addMonths, format } from 'date-fns';
+import { addMonths } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { useContract, useOrderActions, nextStep, prevStep } from '@/store/orderStore';
 import { DURATION_OPTIONS } from '@/lib/data';
@@ -31,6 +31,9 @@ export default function ContractForm() {
   const currentContract = useContract();
   const { update } = useOrderActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isStartDateOpen, setIsStartDateOpen] = useState(false);
+
+  // Start date defaults to null; user must select explicitly
 
   const { 
     control,
@@ -52,15 +55,23 @@ export default function ContractForm() {
   const watchedDuration = watch('durationMonths');
   const watchedCustomDuration = watch('customDuration');
 
+  // Normalize start date to a Date instance (react-hook-form may return string/unknown in some cases)
+  const startDateObj = React.useMemo(() => {
+    if (!watchedStartDate) return null;
+    const d = watchedStartDate instanceof Date
+      ? watchedStartDate
+      : new Date(watchedStartDate as unknown as string | number);
+    // Guard invalid dates
+    return isNaN(d.getTime()) ? null : d;
+  }, [watchedStartDate]);
+
   // Calculate end date based on start date and duration
   const calculatedEndDate = React.useMemo(() => {
-    if (!watchedStartDate) return null;
-    
+    if (!startDateObj) return null;
     const actualDuration = watchedDuration === -1 ? (watchedCustomDuration || 0) : watchedDuration;
     if (actualDuration <= 0) return null;
-    
-    return addMonths(watchedStartDate, actualDuration);
-  }, [watchedStartDate, watchedDuration, watchedCustomDuration]);
+    return addMonths(startDateObj, actualDuration);
+  }, [startDateObj, watchedDuration, watchedCustomDuration]);
 
   const onSubmit = async (data: ContractFormData) => {
     if (!data.startDate) {
@@ -99,7 +110,7 @@ export default function ContractForm() {
     router.push('/step-2');
   };
 
-  const isFormValid = watchedStartDate && 
+  const isFormValid = !!startDateObj && 
     ((watchedDuration !== -1 && watchedDuration > 0) || 
      (watchedDuration === -1 && (watchedCustomDuration || 0) > 0));
 
@@ -123,11 +134,12 @@ export default function ContractForm() {
             control={control}
             rules={{ required: 'Start date is required' }}
             render={({ field }) => (
-              <Popover>
+              <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     data-testid="startDate"
+                    aria-label="Pick a date"
                     className={cn(
                       "w-full justify-start text-left font-normal mt-1",
                       !field.value && "text-muted-foreground",
@@ -140,9 +152,13 @@ export default function ContractForm() {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
+                    data-slot="calendar"
                     mode="single"
                     selected={field.value || undefined}
-                    onSelect={field.onChange}
+                    onSelect={(date) => {
+                      field.onChange(date);
+                      if (date) setIsStartDateOpen(false);
+                    }}
                     disabled={(date) => date < new Date()}
                     initialFocus
                   />
@@ -179,7 +195,7 @@ export default function ContractForm() {
               }
             }}
           >
-            <SelectTrigger data-testid="duration" className={`mt-1 ${errors.durationMonths ? 'border-red-500' : ''}`}>
+            <SelectTrigger data-testid="duration" data-slot="select-trigger" className={`mt-1 ${errors.durationMonths ? 'border-red-500' : ''}`}>
               <SelectValue placeholder="Select duration" />
             </SelectTrigger>
             <SelectContent>
@@ -205,12 +221,12 @@ export default function ContractForm() {
               id="customDuration"
               type="number"
               min="1"
-              max="60"
+              max="100"
               {...register('customDuration', { 
                 valueAsNumber: true,
                 required: watchedDuration === -1 ? 'Custom duration is required' : false,
                 min: { value: 1, message: 'Duration must be at least 1 month' },
-                max: { value: 60, message: 'Duration cannot exceed 60 months' }
+                max: { value: 100, message: 'Duration cannot exceed 100 months' }
               })}
               placeholder="Enter number of months"
               className={`mt-1 ${errors.customDuration ? 'border-red-500' : ''}`}
@@ -223,23 +239,23 @@ export default function ContractForm() {
       </div>
 
       {/* Contract Summary */}
-      {watchedStartDate && isFormValid && (
-        <Card className="bg-blue-50 border-blue-200">
+      {startDateObj && isFormValid && (
+        <Card className="bg-[#FEFAF3] border-gray-300">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg text-blue-900">Contract Summary</CardTitle>
+            <CardTitle className="text-lg text-gray-900">Contract Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-blue-700 font-medium">Start Date:</span>
-                <div className="text-blue-900 font-semibold">
-                  {formatDate(watchedStartDate, 'EEEE, MMMM d, yyyy')}
+                <span className="text-gray-700 font-medium">Start Date:</span>
+                <div className="text-gray-900 font-semibold">
+                  {formatDate(startDateObj, 'EEEE, MMMM d, yyyy')}
                 </div>
               </div>
               
               <div>
-                <span className="text-blue-700 font-medium">Duration:</span>
-                <div className="text-blue-900 font-semibold">
+                <span className="text-gray-700 font-medium">Duration:</span>
+                <div className="text-gray-900 font-semibold">
                   {watchedDuration === -1 
                     ? formatDuration(watchedCustomDuration || 0)
                     : formatDuration(watchedDuration)
@@ -250,16 +266,16 @@ export default function ContractForm() {
               {calculatedEndDate && (
                 <>
                   <div>
-                    <span className="text-blue-700 font-medium">End Date:</span>
-                    <div className="text-blue-900 font-semibold" data-testid="endDate">
+                    <span className="text-gray-700 font-medium">End Date:</span>
+                    <div className="text-gray-900 font-semibold" data-testid="endDate">
                       {formatDate(calculatedEndDate, 'EEEE, MMMM d, yyyy')}
                     </div>
                   </div>
                   
                   <div>
-                    <span className="text-blue-700 font-medium">Total Days:</span>
-                    <div className="text-blue-900 font-semibold">
-                      {Math.ceil((calculatedEndDate.getTime() - watchedStartDate.getTime()) / (1000 * 60 * 60 * 24))} days
+                    <span className="text-gray-700 font-medium">Total Days:</span>
+                    <div className="text-gray-900 font-semibold">
+                      {Math.ceil((calculatedEndDate.getTime() - startDateObj!.getTime()) / (1000 * 60 * 60 * 24))} days
                     </div>
                   </div>
                 </>

@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 // As a user, I want to finalize my order and see it appear on the homepage Orders list.
 
 test.describe('Feature: Review & Finalize', () => {
-  test('Scenario: Complete end-to-end flow and order appears on home', async ({ page }) => {
+  test('Scenario: Complete end-to-end flow and order appears on Recent Orders page', async ({ page }) => {
     // Step 1
     await page.goto('/');
     await page.getByRole('button', { name: /Start Building Your Order/i }).click();
@@ -40,16 +40,11 @@ test.describe('Feature: Review & Finalize', () => {
     // Step 4 - finalize
     await page.getByTestId('wizardSubmit').click();
 
-    // Expect success dialog to open
-    await expect(page.getByText(/Order Finalized!/i)).toBeVisible();
-
-    // Close -> navigates home
-    await page.getByRole('button', { name: /^Close$/ }).first().click();
-    await expect(page).toHaveURL('/');
+    // App should navigate directly to Recent Orders page
+    await expect(page).toHaveURL(/.*\/recent-orders$/);
 
     // Orders list should show at least one order
-    // Allow a brief moment for OrdersList to read from localStorage
-    await expect(page.getByText(/Recent Orders/i)).toBeVisible();
+    await expect(page.getByRole('main').getByText(/Recent Orders/i)).toBeVisible();
 
     // Either 'Order #' blocks appear or at least not 'No orders yet.'
     const noOrders = page.getByText(/No orders yet\./i);

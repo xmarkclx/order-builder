@@ -6,7 +6,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-open-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -118,5 +118,88 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Page transition animation */
+@keyframes page-fade-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition-enter {
+  animation: page-fade-slide 220ms ease-out;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition-enter {
+    animation: none;
+  }
+}
+
+/* Sliding left-to-right gradient hover effect for list rows */
+@keyframes hover-gradient-glide {
+  0% {
+    background-position: -60% 0;
+  }
+  100% {
+    background-position: 160% 0;
+  }
+}
+
+.hover-gradient-slide {
+  position: relative;
+  background-image: linear-gradient(
+    90deg,
+    rgba(254, 250, 243, 0) 0%,
+    #F3D8BC 50%,
+    rgba(254, 250, 243, 0) 100%
+  );
+  background-size: 200% 100%;
+  background-position: -60% 0;
+  background-repeat: no-repeat;
+}
+
+.hover-gradient-slide:hover {
+  animation: hover-gradient-glide 5000ms linear infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-gradient-slide:hover {
+    animation: none;
+  }
+}
+
+/* Collapsible vertical slide utility */
+.slidey {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    max-height 260ms ease,
+    opacity 220ms ease,
+    transform 220ms ease;
+  will-change: max-height, opacity, transform;
+}
+
+.slidey.open {
+  max-height: 1200px; /* sufficiently large to accommodate content */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slidey,
+  .slidey.open {
+    transition: none;
+    transform: none;
   }
 }

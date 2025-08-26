@@ -21,9 +21,6 @@ test.describe('Feature: Product & Plan Selection', () => {
     await expect(page.getByTestId('wizardNext')).toBeDisabled();
 
     // Select a product by visible label (from sampleProducts)
-    // Click the card label for the first product by name 'Analytics Suite' or fallback by selecting first radio label
-    // Use a robust generic approach: click first product card label
-    // Select a sample product by its visible name (label wraps the card)
     await page.getByText('API Gateway Pro', { exact: true }).click();
 
     // After selecting product, Next is still disabled until a plan is selected
@@ -41,19 +38,25 @@ test.describe('Feature: Product & Plan Selection', () => {
     await page.getByText('API Gateway Pro', { exact: true }).click();
     await page.getByText('Starter Plan', { exact: true }).click();
 
-    // Enable price editing
-    await page.getByRole('button', { name: /Edit price/i }).click();
+    // Open per-plan edit dialog for the selected plan
+    await page.getByTestId('editPrice-gateway-starter').click();
+    const dialog = page.getByTestId('editPriceDialog');
+    await expect(dialog).toBeVisible();
 
-    // Set custom price to a negative value
-    const customPrice = page.locator('textarea#customPrice');
-    await customPrice.fill('');
-    await customPrice.type('-1');
+    // Set custom price to a negative value and save
+    const input = page.getByTestId('editPriceInput');
+    await input.fill('-1');
+    await page.getByTestId('savePrice').click();
 
     // Next should be disabled
     await expect(page.getByTestId('wizardNext')).toBeDisabled();
 
-    // Change to valid non-negative price and continue to step-3
-    await customPrice.fill('199');
+    // Dialog remains open after invalid save; reuse it to enter a valid price
+    await expect(dialog).toBeVisible();
+    await input.fill('199');
+    await page.getByTestId('savePrice').click();
+
+    // Now Next should be enabled and we can proceed to step-3
     await expect(page.getByTestId('wizardNext')).toBeEnabled();
     await page.getByTestId('wizardNext').click();
     await expect(page).toHaveURL(/.*step-3/);

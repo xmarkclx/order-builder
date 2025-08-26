@@ -65,6 +65,22 @@ export default function ContractForm() {
     return isNaN(d.getTime()) ? null : d;
   }, [watchedStartDate]);
 
+  // Auto-select the first possible date if none is chosen yet
+  // Based on the current disabled rule (date < new Date()), today at 00:00 can be disabled,
+  // so we advance until we find the first date that is not disabled (usually tomorrow).
+  React.useEffect(() => {
+    if (!startDateObj) {
+      const candidate = new Date();
+      // Normalize to start of day
+      candidate.setHours(0, 0, 0, 0);
+      // Advance while the candidate is still before "now"
+      while (candidate < new Date()) {
+        candidate.setDate(candidate.getDate() + 1);
+      }
+      setValue('startDate', candidate, { shouldValidate: true });
+    }
+  }, [startDateObj, setValue]);
+
   // Calculate end date based on start date and duration
   const calculatedEndDate = React.useMemo(() => {
     if (!startDateObj) return null;

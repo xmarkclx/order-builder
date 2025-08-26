@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import RouteTransition from "@/components/RouteTransition";
+import HeaderNav from "@/components/HeaderNav";
 import { Geist_Mono, Open_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -32,15 +32,7 @@ export default function RootLayout({
       >
         <header className="sticky top-0 z-50 border-b bg-background">
           <div className="mx-auto flex h-12 max-w-6xl items-center gap-6 px-4">
-            <Link href="/" className="font-medium hover:underline">
-              Home
-            </Link>
-            <Link href="/step-1" className="hover:underline">
-              Order Builder
-            </Link>
-            <Link href="/recent-orders" className="hover:underline">
-              Recent Orders
-            </Link>
+            <HeaderNav />
           </div>
         </header>
         <main className="mx-auto max-w-6xl px-4 py-6 min-h-screen">

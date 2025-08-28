@@ -345,7 +345,7 @@ export default function ReviewFinalize() {
                       }}
                       className={`group p-3 border border-gray-200 rounded-lg transition-all duration-150 cursor-pointer hover:shadow-sm ${addon.included ? 'bg-[#FEFAF3] ring-2 ring-black' : ''} flex flex-col justify-between`}
                     >
-                      <div className="flex items-stretch justify-between min-h-28">
+                      <div className="flex flex-col min-h-28">
                         <div className="flex items-start">
                           <Checkbox
                             checked={addon.included}

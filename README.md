@@ -1,3 +1,6 @@
+# Demo
+https://markcl-order-builder.vercel.app/ 
+
 # Order Builder
 
 This is a Next.js app that implements a 4-stage order-building workflow with Zustand state, ShadCN UI, and both unit and end-to-end tests.
